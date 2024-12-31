@@ -10,6 +10,8 @@ const servicesRoute = require("./routes/servicesRoute");
 const portfolioRoute = require("./routes/portfolioRoute");
 const bannerRoute = require("./routes/bannerRoute");
 const colorsRoute = require("./routes/colorsRoute");
+const loginRoute = require("./routes/loginRoute");
+const adminRoute = require("./routes/adminRoute");
 
 dotenv.config();
 const app = express();
@@ -43,3 +45,5 @@ app.use("/api/getServices", servicesRoute);
 app.use("/api/getPortfolio", portfolioRoute);
 app.use("/api/getBanner", bannerRoute);
 app.use("/api/getColors", colorsRoute);
+app.use("/api/user", loginRoute);
+app.use("/api/admin", adminRoute);
