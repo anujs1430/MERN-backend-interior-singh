@@ -2,12 +2,13 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userModal = require("../database/modals/userModal");
+const verifyToken = require("../auth/verifyToken");
 
 const router = express.Router();
-const secretKey = "your_secret_key"; // Use environment variables in production
+const secretKey = process.env.JWT_SECRET || "your_secret_key"; // Use env variables in production
 
 // API for User Registeration
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -23,7 +24,7 @@ router.post("/", async (req, res) => {
 
     const newUser = new userModal({ name, email, password: hashedPassword });
 
-    await newUser().save();
+    await newUser.save();
 
     res.status(200).json({
       success: true,
@@ -31,6 +32,7 @@ router.post("/", async (req, res) => {
       message: "User registered successfully",
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       success: false,
       message: error.message,
@@ -39,7 +41,7 @@ router.post("/", async (req, res) => {
 });
 
 // API for User Login
-router.post("/", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -51,7 +53,7 @@ router.post("/", async (req, res) => {
     }
 
     //Compare the provided password with the hashed password in the database
-    const isPassword = await bcrypt.compare(password, userModal.password);
+    const isPassword = await bcrypt.compare(password, user.password);
 
     if (!isPassword) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -71,6 +73,90 @@ router.post("/", async (req, res) => {
     res.status(400).json({
       success: false,
       error,
+    });
+  }
+});
+
+// API for get user info only who loggedin
+router.get("/getUser", verifyToken, async (req, res) => {
+  try {
+    const userInfo = await userModal.findById(req.user.id).select("-password");
+    if (!userInfo) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    res.status(200).json({ success: true, data: userInfo });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// API for user Update info including password
+router.put("/updateUser", verifyToken, async (req, res) => {
+  try {
+    const userID = req.user.id; // Extract user ID from decoded token
+    const { name, email, currentPassword, newPassword } = req.body; // Fields to update
+
+    // Validate input
+    if (!name && !email && !currentPassword && !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field (name, email, password) must be provided",
+      });
+    }
+
+    // Fetch the user from the database
+    const user = await userModal.findById(userID);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update password if provided
+    if (currentPassword && newPassword) {
+      // Verify current password
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+      if (!isPasswordValid) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword; // Update password in the database
+    }
+
+    // Update name and email
+    user.name = name;
+    user.email = email;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        name: updatedUser.name,
+        email: updatedUser.email,
+      },
+      message: "User updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 });
