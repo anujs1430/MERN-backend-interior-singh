@@ -7,6 +7,10 @@ const bannerSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  isVisible: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 module.exports = bannerSchema;

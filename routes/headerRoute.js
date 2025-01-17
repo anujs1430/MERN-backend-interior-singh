@@ -82,4 +82,42 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/visibility", async (req, res) => {
+  try {
+    const { isVisible } = req.body; // Get the visibility state from the request body
+
+    // Get the existing header data from the database
+    const existingData = await headerModal.findOne();
+
+    // If no data exists yet, create an empty object to prevent errors
+    if (!existingData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing header data found",
+      });
+    }
+
+    // Update the visibility status
+    const updatedVisibility = await headerModal.findOneAndUpdate(
+      {},
+      { isVisible: isVisible },
+      { new: true, upsert: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedVisibility,
+      message: "Header visibility updated successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+
+    res.status(400).json({
+      success: false,
+      message: "Error updating header visibility",
+      error,
+    });
+  }
+});
+
 module.exports = router;

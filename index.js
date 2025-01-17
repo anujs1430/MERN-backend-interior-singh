@@ -12,6 +12,8 @@ const bannerRoute = require("./routes/bannerRoute");
 const colorsRoute = require("./routes/colorsRoute");
 const loginRoute = require("./routes/loginRoute");
 const adminRoute = require("./routes/adminRoute");
+const sectionOrderingRoute = require("./routes/sectionOrderingRoute");
+const createSection = require("./routes/createSection");
 
 dotenv.config();
 const app = express();
@@ -47,3 +49,5 @@ app.use("/api/getBanner", bannerRoute);
 app.use("/api/getColors", colorsRoute);
 app.use("/api/user", loginRoute);
 app.use("/api/admin", adminRoute);
+app.use("/api/sectionOrdering", sectionOrderingRoute);
+app.use("/api/createSection", createSection);

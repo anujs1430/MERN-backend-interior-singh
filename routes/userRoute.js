@@ -31,4 +31,62 @@ router.post("/getcontact", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const customerData = await customerModal.find();
+
+    if (!customerData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing Customer query data found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: customerData,
+      message: "Customers Queries fetched successfully",
+    });
+
+    res.status(200);
+  } catch (error) {
+    console.error(error);
+
+    res.status(400).json({
+      success: false,
+      message: "Unable to fetch Customers data",
+      error,
+    });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleteData = await customerModal.findByIdAndDelete(id);
+
+    if (!deleteData) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+      data: deleteData,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(400).json({
+      success: false,
+      message: "Internal server error",
+      error,
+    });
+  }
+});
+
 module.exports = router;

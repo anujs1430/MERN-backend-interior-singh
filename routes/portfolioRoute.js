@@ -92,4 +92,39 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.post("/visibility", async (req, res) => {
+  try {
+    const { isVisible } = req.body;
+
+    const existingData = await portfolioModal.find();
+
+    if (!existingData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing Portfolio data found",
+      });
+    }
+
+    const updatedVisibility = await portfolioModal.updateMany(
+      {},
+      { isVisible: isVisible },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Portfolio visibility updated successfully",
+      data: updatedVisibility,
+    });
+  } catch (error) {
+    console.error(error.message);
+
+    res.status(400).json({
+      success: false,
+      message: "Error updating Protfolio visibility",
+      error,
+    });
+  }
+});
+
 module.exports = router;

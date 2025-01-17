@@ -8,6 +8,10 @@ const portfolioSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    isVisible: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

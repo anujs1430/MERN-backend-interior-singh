@@ -50,4 +50,38 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/visibility", async (req, res) => {
+  try {
+    const { isVisible } = req.body;
+
+    const existingData = await bannerModal.find();
+
+    if (!existingData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing Banner data found",
+      });
+    }
+
+    const updatedVisibility = await bannerModal.findOneAndUpdate(
+      {},
+      { isVisible: isVisible },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Banner visibility updated successfully",
+      data: updatedVisibility,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(400).json({
+      success: false,
+      message: "Error updating Banner visibility",
+      error,
+    });
+  }
+});
+
 module.exports = router;

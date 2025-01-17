@@ -19,6 +19,10 @@ const headerSchema = new mongoose.Schema(
       require: false,
       default: "#ffffff", // Set a default color
     },
+    isVisible: {
+      type: Boolean,
+      default: true,
+    }, // New field for visibility
   },
   { timestamps: true }
 );

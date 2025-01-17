@@ -75,4 +75,39 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/visibility", async (req, res) => {
+  try {
+    const { isVisible } = req.body;
+
+    const existingData = await aboutModal.find();
+
+    if (!existingData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing About data found",
+      });
+    }
+
+    const updatedVisibility = await aboutModal.findOneAndUpdate(
+      {},
+      { isVisible: isVisible },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedVisibility,
+      message: "Header visibility updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(400).json({
+      success: false,
+      message: "Error updating About visibility",
+      error,
+    });
+  }
+});
+
 module.exports = router;

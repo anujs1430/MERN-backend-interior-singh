@@ -93,4 +93,39 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.post("/visibility", async (req, res) => {
+  try {
+    const { isVisible } = req.body;
+
+    const existingData = await servicesModal.find();
+
+    if (!existingData) {
+      return res.status(404).json({
+        success: false,
+        message: "No existing Services data found",
+      });
+    }
+
+    const updatedVisibility = await servicesModal.updateMany(
+      {},
+      { isVisible: isVisible },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: updatedVisibility,
+      message: "Services visibility updated successfully",
+    });
+  } catch (error) {
+    console.log(error.message);
+
+    res.status(400).json({
+      success: false,
+      message: "Error updating Services visibility",
+      error,
+    });
+  }
+});
+
 module.exports = router;

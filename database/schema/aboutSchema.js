@@ -18,6 +18,10 @@ const aboutSchema = new mongoose.Schema(
       type: String,
       require: false,
     },
+    isVisible: {
+      type: Boolean,
+      default: true,
+    }, // New field for visibility
   },
   { timestamps: true }
 );
