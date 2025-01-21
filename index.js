@@ -14,6 +14,8 @@ const loginRoute = require("./routes/loginRoute");
 const adminRoute = require("./routes/adminRoute");
 const sectionOrderingRoute = require("./routes/sectionOrderingRoute");
 const createSection = require("./routes/createSection");
+const faqRoute = require("./routes/faqRoute");
+const footerRoute = require("./routes/footerRoute");
 
 dotenv.config();
 const app = express();
@@ -51,3 +53,5 @@ app.use("/api/user", loginRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/sectionOrdering", sectionOrderingRoute);
 app.use("/api/createSection", createSection);
+app.use("/api/faq", faqRoute);
+app.use("/api/footer", footerRoute);

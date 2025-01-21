@@ -169,7 +169,7 @@ router.post("/visibility/:id", async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: updatedVisibility,
+      data: updatedSection,
       message: "Visibility updated successfully",
     });
   } catch (error) {
