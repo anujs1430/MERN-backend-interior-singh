@@ -43,6 +43,7 @@ router.post("/", upload.fields([{ name: "brandLogo" }]), async (req, res) => {
         email: email || existingData.email, // Use existing email if not provided
         phone: phone || existingData.phone, // Use existing phone if not provided
         navbarBgColor: navbarBgColor || existingData.navbarBgColor, // Use existing navbarBgColor if not provided
+
         brandLogo: req.files?.brandLogo
           ? `/upload/header/${req.files.brandLogo[0].filename}`
           : existingData.brandLogo, // Use existing brandLogo if not provided
@@ -74,6 +75,8 @@ router.get("/", async (req, res) => {
       data: getHeaderData,
     });
   } catch (error) {
+    console.error(error);
+
     res.status(400).json({
       success: false,
       message: "header Get API error",

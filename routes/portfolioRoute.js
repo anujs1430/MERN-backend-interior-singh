@@ -80,7 +80,7 @@ router.delete("/:id", async (req, res) => {
     res.status(200).json({
       success: true,
       data: deletePortfolio,
-      message: "portfolio deleted successdfully",
+      message: "portfolio deleted successfully",
     });
   } catch (error) {
     console.error(error);

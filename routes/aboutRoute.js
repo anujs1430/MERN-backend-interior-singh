@@ -29,18 +29,29 @@ router.post(
     try {
       const { heading, paragraph } = req.body;
 
+      const existingData = await aboutModal.find({});
+
+      if (!existingData) {
+        return res.status(404).json({
+          success: false,
+          message: "No existing about data found",
+        });
+      }
+
       // === this the way to post new data old data will be replaced ===
-      const aboutData = await aboutModal.findOneAndReplace(
+      const aboutData = await aboutModal.findOneAndUpdate(
         {}, //search for the existing about document
         {
-          heading: heading,
-          paragraph: paragraph,
+          heading: heading || existingData.heading,
+          paragraph: paragraph || existingData.paragraph,
+
           mainImage: req.files.mainImage
             ? `/upload/about/${req.files.mainImage[0].filename}`
-            : undefined,
+            : existingData.mainImage,
+
           subImage: req.files.subImage
             ? `/upload/about/${req.files.subImage[0].filename}`
-            : undefined,
+            : existingData.subImage,
         },
         { new: true, upsert: true }
       );
@@ -97,7 +108,7 @@ router.post("/visibility", async (req, res) => {
     res.status(200).json({
       success: true,
       data: updatedVisibility,
-      message: "Header visibility updated successfully",
+      message: "About visibility updated successfully",
     });
   } catch (error) {
     console.log(error);
